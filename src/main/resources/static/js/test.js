@@ -51,7 +51,7 @@ function getMapping7(){
 function postMapping1(){
     $.ajax({
         url : "/api/v1/post-api/domain" ,
-        type:"post",
+        type:"POST",
         success:function(re) { alert(re);}
     })
 }
@@ -66,11 +66,12 @@ function postMapping2(){
 
     $.ajax({
         url : "/api/v1/post-api/member" ,
-        type : "post"
+        type : "post",
         data : JSON.stringify(member) ,
         contentType : "application/json" ,  // 전송타입 : application/json
         success : function(re){ alert(re); }
     })
+}
 
 function postMapping3(){
 
@@ -82,7 +83,7 @@ function postMapping3(){
 
     $.ajax({
         url : "/api/v1/post-api/member2" ,
-        type : "post"
+        type : "post",
         data : JSON.stringify(member) ,
         contentType : "application/json" ,  // 전송타입 : application/json
         success : function(re){ alert(re); }
@@ -96,7 +97,7 @@ function putMapping1(){
     let member = {name : "유재석" ,email : "dddd@naver" ,organization : "qwqwqw"}
     $.ajax({
         url : "/api/v1/put-api/member" ,
-        type : "PUT"
+        type : "PUT",
         data : JSON.stringify(member),
         contentType : "application/json" ,
         success : function(re) { alert(re); }
@@ -108,7 +109,7 @@ function putMapping2(){
      let member = {name : "유재석" ,email : "dddd@naver" ,organization : "qwqwqw"}
         $.ajax({
             url : "/api/v1/put-api/member1" ,
-            type : "PUT"
+            type : "PUT",
             data : JSON.stringify(member),
             contentType : "application/json" ,
             success : function(re) { console.log( re ) }
@@ -120,7 +121,7 @@ function putMapping3(){
      let member = {name : "유재석" ,email : "dddd@naver" ,organization : "qwqwqw"}
         $.ajax({
             url : "/api/v1/put-api/member2" ,
-            type : "PUT"
+            type : "PUT",
             data : JSON.stringify(member),
             contentType : "application/json" ,
             success : function(re) {
@@ -147,5 +148,3 @@ function deletemapping2(){
         success : function(re) { alert(re); }
     })
 }
-
-
