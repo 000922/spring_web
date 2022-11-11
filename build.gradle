@@ -19,10 +19,11 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.springframework.boot:spring-boot-starter-web'   // 스프링
+    compileOnly 'org.projectlombok:lombok'  // 롬복
+    annotationProcessor 'org.projectlombok:lombok'  // 룸복
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'  // 스프링부트 테스트
+    runtimeOnly 'com.mysql:mysql-connector-j' // mysql 라이브러리
 }
 
 tasks.named('test') {
