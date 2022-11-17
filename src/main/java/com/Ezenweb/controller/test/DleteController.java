@@ -1,4 +1,4 @@
-package com.Ezenweb.controller;
+package com.Ezenweb.controller.test;
 
 
 import org.springframework.web.bind.annotation.*;

@@ -1,4 +1,4 @@
-package com.Ezenweb.controller;
+package com.Ezenweb.controller.test;
 
 import com.Ezenweb.domain.dto.MemberDto;
 import org.springframework.web.bind.annotation.*;
