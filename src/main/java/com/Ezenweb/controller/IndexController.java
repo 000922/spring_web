@@ -12,4 +12,8 @@ public class IndexController {
     public Resource getindex(){
         return new ClassPathResource("templates/index.html");
     }
+
+
+
+
 }

@@ -1,21 +1,23 @@
-package com.Ezenweb.domain.entity;
+package com.Ezenweb.domain.entity.member;
 
 import com.Ezenweb.domain.dto.MemberDto;
+import com.Ezenweb.domain.entity.BaseEntity;
+import com.Ezenweb.domain.entity.board.BoardEntity;
 import lombok.*;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity  // 해당연결된 DB의 테이블과 매핑[연결]
 @Table(name="member") // db에서 사용될 테이블 이름
 @NoArgsConstructor @AllArgsConstructor
 @Getter @Setter @ToString @Builder
-public class MemberEntity {
+public class MemberEntity extends BaseEntity {
     // 1. 필드
     @Id // 엔티티당 무조건 1개이상[ PK ]
     @GeneratedValue( strategy = GenerationType.IDENTITY ) // 자동번호 부여
-    private int mno;
+    private int mno; // pk
 
     @Column( nullable = false)  // not null for
     private String memail;      // 회원이메일 = 회원아이디 필드
@@ -26,7 +28,10 @@ public class MemberEntity {
     @Column( nullable = false)
     private String mphone;      // 회원 전화번호 필드
 
-
+    @OneToMany(mappedBy = "memberEntity" )  // [ 1:n] pk 에 해당 어노테이션 mappedBy = "fk필드명"
+    @Builder.Default    // 빌버 사용시 해당 필드의 초기값 설정
+    private List<BoardEntity> boardEntityList
+            = new ArrayList<>();
 
 
 

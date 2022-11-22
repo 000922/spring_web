@@ -1,11 +1,10 @@
 package com.Ezenweb.service;
 
 import com.Ezenweb.domain.dto.MemberDto;
-import com.Ezenweb.domain.entity.MemberEntity;
-import com.Ezenweb.domain.entity.MemberRepository;
+import com.Ezenweb.domain.entity.member.MemberEntity;
+import com.Ezenweb.domain.entity.member.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMailMessage;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +29,20 @@ public class MemberService {
 
 
     // -------------------------------- 서비스 -----------------------//
+
+    // * 로그인된 엔티티 호출
+    public MemberEntity getEntity(){
+        // 1. 로그인 정보 확인[세션 =  loginMno ]
+        Object object = request.getSession().getAttribute("loginMno");
+        if (object == null){ return null; }
+        // 2. 로그인된 회원정보 호출
+        int mno = (Integer)object;
+        // 3. 회원번호 --> 회원정보 호출
+        Optional<MemberEntity> optional = memberRepository.findById(mno);
+        if( !optional.isPresent() ){return null;}
+        // 4. 로그인된 회원의 엔티티 움티티
+        return optional.get();
+    }
     // 1. 회원가입
     @Transactional
     public int setmember(MemberDto memberDto) {

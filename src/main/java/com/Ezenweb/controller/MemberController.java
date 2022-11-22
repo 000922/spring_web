@@ -1,13 +1,10 @@
 package com.Ezenweb.controller;
 
 import com.Ezenweb.domain.dto.MemberDto;
-import com.Ezenweb.domain.entity.MemberEntity;
 import com.Ezenweb.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
