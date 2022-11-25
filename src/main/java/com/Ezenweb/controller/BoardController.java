@@ -55,8 +55,8 @@ public class BoardController {
 
         // 2. 게시물 목록 조회 [ 페이징,검색 ]
         @GetMapping("/boardlist")
-        public List<BoardDto> boardlist(@RequestParam("bcno") int bcno) {
-                return boardService.boardlist( bcno);
+        public List<BoardDto> boardlist(@RequestParam("bcno") int bcno , @RequestParam("page") int page ) {
+                return boardService.boardlist( bcno , page );
         }
 
         // 3. 게시물 개별 조회

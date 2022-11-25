@@ -11,9 +11,14 @@ import com.Ezenweb.domain.entity.board.BoardRepository;
 import com.Ezenweb.domain.entity.member.MemberEntity;
 import com.Ezenweb.domain.entity.member.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
@@ -146,16 +151,22 @@ public class BoardService {
     }
 
     // 2. 게시물 목록 조회
-    @Transactional
-    public List<BoardDto> boardlist(int bcno) {
-        List<BoardEntity> elist = null;
-        if (bcno == 0) {
-            elist = boardRepository.findAll();
-        } // 카테고리번호가 0 이면 전체보기
-        else {  // 카테고리번호가 0이 아니면 선택된 카테고리별 보기
+    @Transactional              // bcno : 카테고리번호 , page : 현재 페이지번호
+    public List<BoardDto> boardlist(int bcno , int page) {
+        Page<BoardEntity> elist = null;
+        // Pageable : import 사용시 domain 패키지
+        // 2. PageRequest.of 구현클래스
+            // 1. // PageRequest.of( 현재페이지번호 , 표시할레코드수 , 정렬 )
+        Pageable pageable = PageRequest.of( page-1 , 3  );    // 페이지 설정
+        // 1. 카테고리번호가 0 이면 전체보기
+        if (bcno == 0) { elist = boardRepository.findAll(pageable); }
+        // 2.카테고리번호가 0이 아니면 선택된 카테고리별 보기
+       /* else {
             BcategoryEntity bcEntity = bcategoryRepository.findById(bcno).get();
             elist = bcEntity.getBoardEntityList(); // 해당 엔티티의 게시물목록
-        }
+        }*/
+
+        System.out.println("페이징 인터페이스 :" + elist);
         List<BoardDto> dlist = new ArrayList<>(); // 2. 컨트롤에게 전달할때 형변환[ entity->dto ] : 역할이 달라서
         for (BoardEntity entity : elist) { // 3. 변환
             dlist.add(entity.toDto());
