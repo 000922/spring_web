@@ -27,10 +27,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service // 컴포넌트 [Spring MVC]
 public class BoardService {
@@ -150,27 +147,40 @@ public class BoardService {
         } // 2. 0 이면 entity 생성 실패
     }
 
-    // 2. 게시물 목록 조회
+    // 2. 게시물 목록 조회     // 11-25 페이징처리 되도록 수업함
     @Transactional              // bcno : 카테고리번호 , page : 현재 페이지번호
-    public List<BoardDto> boardlist(int bcno , int page) {
-        Page<BoardEntity> elist = null;
-        // Pageable : import 사용시 domain 패키지
-        // 2. PageRequest.of 구현클래스
-            // 1. // PageRequest.of( 현재페이지번호 , 표시할레코드수 , 정렬 )
-        Pageable pageable = PageRequest.of( page-1 , 3  );    // 페이지 설정
-        // 1. 카테고리번호가 0 이면 전체보기
-        if (bcno == 0) { elist = boardRepository.findAll(pageable); }
-        // 2.카테고리번호가 0이 아니면 선택된 카테고리별 보기
-       /* else {
-            BcategoryEntity bcEntity = bcategoryRepository.findById(bcno).get();
-            elist = bcEntity.getBoardEntityList(); // 해당 엔티티의 게시물목록
-        }*/
+    public List<BoardDto> boardlist(int page , int bcno , String key , String keyword) {
+        Page<BoardEntity> elist = null; // 1. 페이징처리된 엔티티 리스트 객체 선언
+        Pageable pageable = PageRequest.of(
+                page-1 , 3 , Sort.by( Sort.Direction.DESC , "bno" ) );    // 페이지 설정
 
-        System.out.println("페이징 인터페이스 :" + elist);
+        // 3. 검색여부 판단
+        if( key.equals("btitle") ){ // 검색필드가 제목이면
+            // 1. 조건 : 제목검색 2.조건 : 카테고리
+            elist = boardRepository.findbybtitle( bcno , keyword , pageable );
+        }else if( key.equals("bcotent") ){  // 검색필드가 제목이면
+            // 1. 조건 : 제목검색 2.조건 : 카테고리
+            elist = boardRepository.findbybcontent( bcno , keyword , pageable );
+        }else{  // 검색이 없으면
+            if( bcno == 0) elist = boardRepository.findAll( pageable );
+            else elist = boardRepository.findBybcno( bcno , pageable);
+        }
+        // http://localhost:8081/board/boardlist?bcno=3&page=1&key=btitle&keyword=%EA%B4%80%EA%B4%91
+
+        // 프론트엔드에 표시할 페이징번호버튼 수
+        int btncount = 5;                               // 1.페이지에 표시할 총 페이지 버튼 개수
+        int startbtn = (page/btncount) * btncount +1;   // 2. 시작번호 버튼
+        int endbtn = startbtn + btncount-1;             // 3. 마지막번호 버튼
+        if( endbtn > elist.getTotalPages() ) endbtn =elist.getTotalPages();
+
         List<BoardDto> dlist = new ArrayList<>(); // 2. 컨트롤에게 전달할때 형변환[ entity->dto ] : 역할이 달라서
         for (BoardEntity entity : elist) { // 3. 변환
             dlist.add(entity.toDto());
         }
+
+        dlist.get(0).setStartbtn(startbtn);
+        dlist.get(0).setEndbtn(endbtn);
+
         return dlist;  // 4. 변환된 리스트 dist 반환
     }
 
@@ -246,3 +256,21 @@ public class BoardService {
 
 
 } // END
+
+/*
+  // Pageable : import 사용시 domain 패키지
+        // 2. PageRequest.of 구현클래스
+            // 1. // PageRequest.of( 현재페이지번호 , 표시할레코드수 , 정렬 )
+
+
+ */
+
+// *. 검색페이징된
+      /*  System.out.println("검색페이징된 엔티티들 :" + elist );
+        System.out.println("검색페이징된 총엔티티수 :" + elist.getTotalElements() );
+        System.out.println(" 총페이지수 : " + elist.getTotalPages() );
+        System.out.println("현재페이지수 :" + elist.getNumber() );
+        System.out.println("현재엔티티들 객체정보 :" + elist.getContent());
+        System.out.println("현재 페이지의 게시물수 : " + elist.getNumberOfElements() );
+        System.out.println("현재 페이지가 첫페이지 여부 :" + elist.isFirst() );
+        System.out.println("현재 페이지가 마지막페이지 여부확인 :" + elist.isLast() );*/
