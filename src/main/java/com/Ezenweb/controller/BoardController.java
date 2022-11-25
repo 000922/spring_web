@@ -41,10 +41,15 @@ public class BoardController {
         public Resource getupdate(){ return new ClassPathResource("templates/board/update.html"); }
 
         // --------3.요청과응답 처리 [model] ----- //
-        // 1. 게시물 쓰기 [ 첨부파일 ]
+        /*// 1. 게시물 쓰기 [ 첨부파일 없을때  ]
         @PostMapping("/setboard")
         public boolean setboard( @RequestBody BoardDto boardDto ){
-                System.out.println( boardDto.toString());
+                System.out.println( "확인 : " +boardDto.toString());
+                return boardService.setboard( boardDto);
+        }*/
+        // 1. 게시물 쓰기 [ 첨부파일 있을때  ]
+        @PostMapping("/setboard")
+        public boolean setboard( BoardDto boardDto ){
                 return boardService.setboard( boardDto);
         }
 
@@ -66,11 +71,9 @@ public class BoardController {
                 return boardService.delboard( bno );
         }
 
-        // 5. 게시물 수정 [ 첨부파일 ]
+        //5 . 게시물 수정
         @PutMapping("/upboard")
-        public boolean upboard( @RequestBody BoardDto boardDto){
-                return boardService.upboard( boardDto );
-        }
+        public boolean upboard( BoardDto boardDto){  return boardService.upboard( boardDto );}
 
         // 6. 카테고리 등록
         @PostMapping("/setbcategory")
@@ -81,6 +84,12 @@ public class BoardController {
         @GetMapping("/bcategorylist")
         public List<BcategoryDto> bcategorylist(){
                 return boardService.bcategorylist();
+        }
+
+        // 8. 첨부파일 다운로드
+        @GetMapping("/filedownload")
+        public void filedownload(@RequestParam("filename") String filename){
+                boardService.filedownload(filename);
         }
 
 

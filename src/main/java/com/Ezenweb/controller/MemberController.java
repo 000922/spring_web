@@ -5,10 +5,11 @@ import com.Ezenweb.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@CrossOrigin(origins = "http://localhost:3000") // 요청 포트 변경 어노테이션
 @RestController // Restful api 사용하는 controller 명시
 @RequestMapping("/member") // 공통 URL 매핑 주소
 public class MemberController {

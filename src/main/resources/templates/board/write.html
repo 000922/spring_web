@@ -7,13 +7,15 @@
 <body>
 <h1> 글쓰기 페이지 </h1>
 
-            <input type="text" class="bcname"> <button type="button" onclick="setbcategory()">카테고리추가</button>
+            <input type="text" class="bcname">
+                <button type="button" onclick="setbcategory()">카테고리추가</button>
             <div class="bcategorybox"></div>
 
-            <form>
-                제목 : <input type="text" class="btitle">
-                내용 : <input type="text" class="bcontent">
-                첨부파일 : <input type="text" class="bfile">
+            <form class="boardform">
+                <!--  form 전송시 태그속성명 name Dto 필드명 동일 => 자동매핑(형변환) 된다. -->
+                제목 : <input type="text" name="btitle">
+                내용 : <input type="text" name="bcontent">
+                첨부파일 : <input type="file" name="bfile">
                 <button type="button" onclick="setboard()">등록</button>
             </form>
 

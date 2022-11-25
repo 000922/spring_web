@@ -26,7 +26,7 @@ public class BoardEntity extends BaseEntity {
     @Column( nullable = false )     // not null
     @ColumnDefault( "0" )           // JPA insert 할 경우 default
     private int bview;              // 조회수
-    @Column( nullable = false )     // not null
+    @Column                         // not null
     private String bfile;           // 첨부파일
 
 
@@ -52,8 +52,8 @@ public class BoardEntity extends BaseEntity {
                 .btitle( this.btitle)
                 .bcontent( this.bcontent)
                 .bview( this.bview)
-                .bfile( this.bfile)
                 .memail( this.memberEntity.getMemail() )
+                .bfilename( this.bfile)
                 .build();
     }
 

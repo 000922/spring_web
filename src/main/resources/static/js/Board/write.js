@@ -1,7 +1,7 @@
 alert('write on');
 let bcno = 2; // 카테고리 번호   // 카테고리 기본값 = 자유게시판
 
-
+/*// 1. 게시물 등록 메소드
 function setboard(){
 
     let data ={
@@ -11,7 +11,7 @@ function setboard(){
         bcno : bcno
     }
 
-            $.ajax({
+            $.ajax({    // http 사용하는 jquery 비동기통신 함수 [ 기본값 contentType  text/html ]
                 url : "/board/setboard" ,
                 type : "post",
                 data : JSON.stringify(data),
@@ -25,7 +25,39 @@ function setboard(){
                 }
             })
 
+} // end*/
+
+// 1. 게시물 등록 메소드  [ 첨부파일 전송 ]
+function setboard(){
+
+            let boardform = document.querySelector('.boardform')
+            let formdata = new FormData(boardform);
+             formdata.set("bcno" , bcno ) // 폼 데이터에 카테고리 정보 추가
+                        // "name" , data
+            $.ajax({    // http 사용하는 jquery 비동기통신 함수 [ 기본값 contentType  text/html ]
+                url : "/board/setboard" ,
+                type : "post",
+                data : formdata ,
+                // Content-Type: multipart/formed-data  <-- 파일 첨부
+                contentType : false ,   // Multipart 전송 방법2( 첨부파일 )
+                processData : false ,   // Multipart 전송 방법3( 첨부파일 )
+                success : function(re) {
+                if( re == true){
+                alert('글작성성공');
+                location.href="/board/list";
+                }
+                else{ alert("글작성실패"); }
+                }
+            })
+
 } // end
+
+
+
+
+
+
+
 
 // 2. 게시물 카테고리 등록 메소드
 function setbcategory(){

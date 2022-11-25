@@ -1,6 +1,5 @@
 package com.Ezenweb.controller;
 
-import com.Ezenweb.service.NoticeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -12,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/notice")
 public class NoticeController {
 
-    @Autowired
-    private NoticeService noticeService = new NoticeService();
+    /*@Autowired
+    private NoticeService noticeService = new NoticeService();*/
 
     // 1. 오픈
     /*@GetMapping("/Nolist")
