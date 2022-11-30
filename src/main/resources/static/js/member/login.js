@@ -1,6 +1,6 @@
 
 
-alert('ddd')
+/*alert('ddd')
 
 function getmember(){
 
@@ -18,7 +18,7 @@ function getmember(){
     })
 
 
-}
+}*/
 
 
 

@@ -7,7 +7,7 @@ function getloginMno(){
         success : function(re) {
             alert(re)
             let headerbox = '';
-            if(re == "0"){ // 로그인 안했다.
+            if(re == ""){ // 로그인 안했다.
                 headerbox +=
                             '<a href="/member/signup"><button type="button"> 회원가입 </button></a>'+
                             '<a href="/member/login"><button type="button"> 로그인 </button></a>'
@@ -25,7 +25,7 @@ function getloginMno(){
 
     })
 }
-// 로그아웃 [ 서버에 있는 세션 초기화 ]
+/*// 로그아웃 [ 서버에 있는 세션 초기화 ]
 function logout(){
     $.ajax({
         url : "/member/logout" , //  요청url
@@ -35,7 +35,7 @@ function logout(){
                 // location.href = URL
         }
     })
-}
+}*/
 // 회원목록
 list()
 function list(){

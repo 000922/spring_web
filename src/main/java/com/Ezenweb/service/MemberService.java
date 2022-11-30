@@ -6,18 +6,23 @@ import com.Ezenweb.domain.entity.member.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 @Service // 헤당 클래스 service 임을 명시
-public class MemberService {
+public class MemberService implements UserDetailsService {
 
     // --------- 전역 객체 -------------- //
     @Autowired
@@ -43,15 +48,26 @@ public class MemberService {
         // 4. 로그인된 회원의 엔티티 움티티
         return optional.get();
     }
-    // 1. 회원가입
+    // 1. 회원가입 [ 일반 ]
     @Transactional
     public int setmember(MemberDto memberDto) {
+        // 암호화 : 해시함수 사용하는 암호화 기법중 하나 [ BCrypt ]
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        memberDto.setMpassword( passwordEncoder.encode( memberDto.getPassword() ) );
+
         // 1. Dao 처리
         MemberEntity entity = memberRepository.save(memberDto.toEntity() );
+
+
+        // 회원등급 넣어주기
+        entity.setMrol("user");
+
+
+        // 2. 결과 반환
         return entity.getMno();
     }
-    // 2. 로그인
-    @Transactional
+    // 2. 로그인 [ 시큐리티 사용시 필요없음 ]
+    /*@Transactional
     public int getmember(MemberDto memberDto){
         List<MemberEntity> entityList = memberRepository.findAll();
         // 2. 입력받은 데이터와 일치값 찾기
@@ -67,7 +83,30 @@ public class MemberService {
             }
         }
         return 0; // 아디 틀림
+    }*/
+
+    // 2. [시큐리티 사용시 ] 로그인 인증 메소드
+
+
+    // 2. [ 시큐리티 사용시 ] 로그인 인증 메소드 재정의
+    @Override
+    public UserDetails loadUserByUsername(String memail ) throws UsernameNotFoundException {
+        // 1. 입력받은 아이디 [ memail ] 로 엔티티 찾기
+        MemberEntity memberEntity = memberRepository.findByMemail( memail )
+                .orElseThrow( ()-> new UsernameNotFoundException("사용자가 존재하지 않습니다,") );  // .orElseThrow : 검색 결과가 없으면 화살표함수[람다식]를 이용한
+
+        // 2. 검증된 토큰 생성
+        Set<GrantedAuthority>  authorities = new HashSet<>();
+        authorities.add(
+                new SimpleGrantedAuthority(memberEntity.getMrol() ) ); // 토큰정보에 일반회원 내용 넣기
+        // 3.
+        MemberDto memberDto = memberEntity.toDto();                     // 엔티티 --> Dto
+        memberDto.setAuthorities( authorities );                        // dto --> 토큰 추가
+        System.out.println( memberDto );
+        return memberDto;
+
     }
+
     // 3. 비밀번호 찾기
     @Transactional
     public String getpassword( String memail) {
@@ -128,7 +167,7 @@ public class MemberService {
         return 0;
     }
     // 6. 로그인 여부 판단 메소드
-    public int getloginMno(){
+    /*public int getloginMno(){
         // 1. 세션 호출
         Object object= request.getSession().getAttribute("loginMno");
         System.out.println(object);
@@ -136,11 +175,30 @@ public class MemberService {
         // 2. 세션 여부 판단
         if (object != null) { return (Integer) object; }
         else { return 0; }
+    }*/
+    // 6. 로그인 여부 판단
+    public String getloginMno(){
+        // 1. 인증된 토큰 확인
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // 2. 인증된 토큰 내용 확인
+        Object principal = authentication.getPrincipal();
+        System.out.println("토큰 내용확인 : " + principal);
+        // 3. 토큰 내용에 따른 제어
+        if( principal.equals("anonymousUser") ){    // anonymousUser 이면 로그인 전
+            return null;
+        }else{  // anonymousUser 아니면 로그인후
+            MemberDto memberDto = (MemberDto) principal;
+            return memberDto.getMemail();
+        }
     }
+
+
+
+
     // 7. 로그아웃
-    public void logout(){
+   /* public void logout(){
         request.getSession().setAttribute("loginMno" , null);
-    }
+    }*/
 
     // 8. 회원목록
     public List<MemberDto> list(){

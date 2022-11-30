@@ -9,7 +9,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-@CrossOrigin(origins = "http://localhost:3000") // 요청 포트 변경 어노테이션
+@CrossOrigin(origins = "http://localhost:3001") // 요청 포트 변경 어노테이션
 @RestController // Restful api 사용하는 controller 명시
 @RequestMapping("/member") // 공통 URL 매핑 주소
 public class MemberController {
@@ -44,11 +44,11 @@ public class MemberController {
         int result = memberService.setmember( memberDto );
         return result;
     }
-    @PostMapping("/getmember")   // 로그인 기능
+    /*@PostMapping("/getmember")   // 로그인 기능 [ 시리큐리 사용시 필요없으ㅜㅁ ]
     public int getmember( @RequestBody MemberDto memberDto){
         int result = memberService.getmember( memberDto);
         return result;
-    }
+    }*/
     @GetMapping("/getpassword") //패스워드 찾기
     public String getpassword(@RequestParam("memail") String memail){
         String result = memberService.getpassword( memail );
@@ -68,15 +68,15 @@ public class MemberController {
     }
 
     @GetMapping("/getloginMno")
-    public int getloginMno(){
-        int result = memberService.getloginMno();
+    public String getloginMno(){
+        String result = memberService.getloginMno();
         return result;
 
     }
-    @GetMapping("/logout")  // 로그아웃
+   /* @GetMapping("/logout")  // 로그아웃
     public void logout(){
         memberService.logout();
-    }
+    }*/
 
     @GetMapping("/list") // 8. 회원목록
     public List<MemberDto> list(){
