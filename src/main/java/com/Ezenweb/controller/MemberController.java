@@ -9,7 +9,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-@CrossOrigin(origins = "http://localhost:3001") // 요청 포트 변경 어노테이션
+//@CrossOrigin(origins = "http://localhost:3001") // 요청 포트 변경 어노테이션
 @RestController // Restful api 사용하는 controller 명시
 @RequestMapping("/member") // 공통 URL 매핑 주소
 public class MemberController {
@@ -20,7 +20,7 @@ public class MemberController {
     private MemberService memberService; // 서비스 객체 생성
 
     // --------------------------------- HTML 반환 매핑 ---------------------------------- //
-    @GetMapping("/signup")
+    /*@GetMapping("/signup")
     public Resource getsignup(){ return new ClassPathResource("templates/member/signup.html"); }
 
     @GetMapping("/login")
@@ -33,7 +33,7 @@ public class MemberController {
     public Resource getdelete(){ return new ClassPathResource("templates/member/delete.html");}
 
     @GetMapping("/update")
-    public Resource getupdate(){ return new ClassPathResource("templates/member/update.html");}
+    public Resource getupdate(){ return new ClassPathResource("templates/member/update.html");}*/
 
 
 

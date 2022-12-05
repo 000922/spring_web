@@ -1,0 +1,32 @@
+.header_name{ color: red; }
+
+.logo{ width : 150px; }
+ul{ list-style : none; }
+a{
+    color: black;
+    text-decoration: none;
+    outline: none;
+}
+
+/* 웹 가로 사이즈 */
+.webbox{
+    width : 1000px;
+    margin : 0 auto;
+}
+
+.header{
+    display : flex;
+    justify-content: space-between;
+     margin-top : 50px;
+}
+
+.top_menu{
+    display : flex;
+    justify-content: space-between;
+    margin-top : 50px;
+}
+
+.top_menu li{ margin-left : 20px;}
+
+
+

@@ -19,17 +19,18 @@ public class MemberEntity extends BaseEntity {
     @GeneratedValue( strategy = GenerationType.IDENTITY ) // 자동번호 부여
     private int mno; // pk
 
-    @Column( nullable = false)  // not null for
-    private String memail;      // 회원이메일 = 회원아이디 필드
+    @Column( nullable = false ) // not null
+    private String memail;      // 회원이메일=회원아이디 필드
 
-    @Column( nullable = false)
-    private String mpassword;      // 회원비밀번호
+    @Column
+    private String mpassword;   // 회원비밀번호 필드
 
-    @Column( nullable = false)
+    @Column
     private String mphone;      // 회원 전화번호 필드
 
     @OneToMany(mappedBy = "memberEntity" )  // [ 1:n] pk 에 해당 어노테이션 mappedBy = "fk필드명"
     @Builder.Default    // 빌버 사용시 해당 필드의 초기값 설정
+    @ToString.Exclude
     private List<BoardEntity> boardEntityList = new ArrayList<>();
 
    @Column // 회원 등급

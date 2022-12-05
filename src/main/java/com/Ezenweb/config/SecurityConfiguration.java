@@ -9,8 +9,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import static org.hibernate.criterion.Restrictions.and;
+
 @Configuration
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+
     @Autowired
     private MemberService memberService;
     @Override // 인증(로그인) 관련 메소드 재정의
@@ -35,7 +38,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()  // 기능 구분
                     .csrf() // 요청 위조 방지
                         .ignoringAntMatchers("/member/getmember") // 로그인 post 사용  // 해당 URL 요청 방지 해지
-                        .ignoringAntMatchers("/member/setmember"); // 회원가입 post 사용
+                        .ignoringAntMatchers("/member/setmember") // 회원가입 post 사용
+                  .and()
+                        .oauth2Login()                              // 소셜 로그인 보안 설정
+                        .defaultSuccessUrl("/")
+                        .userInfoEndpoint()                         // Endpoint (종착점) : 소셜 회원정보를 들어오는곳
+                        .userService( memberService );              // 해당 서비스  loadUser 메소드 구현
     }
 }
 

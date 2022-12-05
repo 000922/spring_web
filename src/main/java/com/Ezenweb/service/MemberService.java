@@ -1,6 +1,7 @@
 package com.Ezenweb.service;
 
 import com.Ezenweb.domain.dto.MemberDto;
+import com.Ezenweb.domain.dto.OauthDto;
 import com.Ezenweb.domain.entity.member.MemberEntity;
 import com.Ezenweb.domain.entity.member.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import javax.mail.internet.MimeMessage;
@@ -22,7 +28,63 @@ import javax.transaction.Transactional;
 import java.util.*;
 
 @Service // 헤당 클래스 service 임을 명시
-public class MemberService implements UserDetailsService {
+public class MemberService implements
+        UserDetailsService ,
+        OAuth2UserService< OAuth2UserRequest , OAuth2User> {
+
+    @Override // 로그인 성공한 소셜 회원 정보 받는 메소드
+    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+                                        // userRequest 인증 결과 요청변수
+        System.out.println("1. userRequest: " + userRequest.toString() );
+
+        // 1. 인증[로그인] 결과 정보 요청
+        OAuth2UserService oAuth2UserService = new DefaultOAuth2UserService();
+        OAuth2User oAuth2User = oAuth2UserService.loadUser( userRequest );
+            System.out.println("2. oauth2user: " + oAuth2User.toString() );
+
+        // 2. oauth2 클라이언트 식별 [ 카카오 vs 네이버 vs 구글 ]
+        String registrationId = userRequest.getClientRegistration().getRegistrationId();
+        System.out.println("3. oauth2회사명 : "+ registrationId );
+
+        // 3. 회원정보 담는 객체 [JSON 형태 ]
+        String oauth2UserInfo = userRequest
+                .getClientRegistration()
+                .getProviderDetails()
+                .getUserInfoEndpoint()
+                .getUserNameAttributeName();
+
+        System.out.println("4.회원정보 : "+ oauth2UserInfo );
+        System.out.println("5.인증 결과 :" + oAuth2User.getAttributes() );
+        // 4. 요청 정보 원본
+       // oAuth2User.getAuthorities();
+
+        // 4. Dto 처리
+        OauthDto oauthDto = OauthDto.of( registrationId , oauth2UserInfo , oAuth2User.getAttributes() );
+
+        // * DB처리
+        // 1. 이메일로 엔티티 검색 [ 가입 or 기존회원 구분 ]
+        Optional< MemberEntity >optional = memberRepository.findByMemail( oauthDto.getMemail() );
+
+        MemberEntity memberEntity = null; //
+        if( optional.isPresent() ){ // 기존회원이면 // optional 클래스 [null 예외처리 방지 ]
+            memberEntity = optional.get();
+        }else{  // 기존회원이 아니면 [ 가입 ]
+           memberEntity = memberRepository.save( oauthDto.toEntity() );
+        }
+
+        // 권한부여
+        Set<GrantedAuthority> authorities   = new HashSet<>();
+        authorities.add( new SimpleGrantedAuthority( memberEntity.getMrol() ) );
+        // 5. 반환
+        MemberDto memberDto = new MemberDto();
+            memberDto.setMemail( memberEntity.getMemail() );
+            memberDto.setAuthorities( authorities );
+            memberDto.setAttributes( oauthDto.getAttributes());
+
+        return memberDto;
+    }
+
+
 
     // --------- 전역 객체 -------------- //
     @Autowired
@@ -30,7 +92,7 @@ public class MemberService implements UserDetailsService {
     @Autowired // 스프링 컨테이너 [메모리] 위임
     private HttpServletRequest request;         // 요청 객체
     @Autowired
-    JavaMailSender javaMailSender;  // 메일전송 객체
+    private JavaMailSender javaMailSender;  // 메일전송 객체
 
 
     // -------------------------------- 서비스 -----------------------//
@@ -188,7 +250,7 @@ public class MemberService implements UserDetailsService {
             return null;
         }else{  // anonymousUser 아니면 로그인후
             MemberDto memberDto = (MemberDto) principal;
-            return memberDto.getMemail();
+            return memberDto.getMemail()+"_"+memberDto.getAuthorities();
         }
     }
 

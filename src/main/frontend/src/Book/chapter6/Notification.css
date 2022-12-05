@@ -1,0 +1,20 @@
+
+/* Notification 컴포넌트 */
+.wrapper{
+    margin : 8px;
+    padding : 8px;
+    display: flex;
+    flex-direction: row;
+    border : 1px solid grey;
+    border-radius : 16px;
+}
+.messageText{
+    color : black;
+    font-size :16px;
+}
+
+
+
+
+
+
