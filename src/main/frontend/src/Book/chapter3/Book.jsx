@@ -2,6 +2,7 @@
     // 컴포넌트=함수 만들기 [ HTML 구성 ]
 // 1. React 라이브러리 임포드
 import React from 'react';
+import axios from 'axios';  // npm install axios 설치 했을경우만 가능
 
 // 2. 컴포넌트 만들기 [ 함수 만들기 ]
 function Book(props){   // : props 매개변수[인수]
