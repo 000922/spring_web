@@ -39,7 +39,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .csrf() // 요청 위조 방지
                         .ignoringAntMatchers("/member/getmember") // 로그인 post 사용  // 해당 URL 요청 방지 해지
                         .ignoringAntMatchers("/member/setmember") // 회원가입 post 사용
-                  .and()
+                        .ignoringAntMatchers("/board/setbcategory")
+                        .ignoringAntMatchers("/board/setboard") // 게시물 post 사용
+                .and()
                         .oauth2Login()                              // 소셜 로그인 보안 설정
                         .defaultSuccessUrl("/")
                         .userInfoEndpoint()                         // Endpoint (종착점) : 소셜 회원정보를 들어오는곳
