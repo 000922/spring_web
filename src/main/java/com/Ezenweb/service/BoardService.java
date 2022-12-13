@@ -3,6 +3,7 @@ package com.Ezenweb.service;
 
 import com.Ezenweb.domain.dto.BcategoryDto;
 import com.Ezenweb.domain.dto.BoardDto;
+import com.Ezenweb.domain.dto.PageDto;
 import com.Ezenweb.domain.entity.BaseEntity;
 import com.Ezenweb.domain.entity.bcategory.BcategoryEntity;
 import com.Ezenweb.domain.entity.bcategory.BcategoryRepository;
@@ -68,27 +69,24 @@ public class BoardService {
                 realfilename += "_";        // 문자열[1] _ 문자열[2] _ 문자열[3].확장자명
             }
         }
-        String filepath = path + filename;    // 1. 경로 찾기
-        try {   // 2. 헤더 구성
-            response.setHeader(
-                    "Content-Disposition",  // 다운로드형식  [ 브라우저 마다 다름 ]
-                    "attachment; filename=" + URLEncoder.encode(realfilename, "UTF-8")); // 다운로드에 표시될 파일명
+        String filepath = path+filename; // 1. 경로 찾기
+        try {  // 2. 헤더 구성 [ HTTP 해서 지원하는 다운로드형식 메소드 [ response ]
+            response.setHeader( // 응답
+                    "Content-Disposition", // 다운로드 형식 [ 브라우저 마다 다름 ]
+                    "attachment;filename=" + URLEncoder.encode(realfilename, "UTF-8")); // 다운로드에 표시될 파일명
             File file = new File(filepath); // 해당 경로의 파일 객체화
-            // 3. 다운로드 스트림
-            BufferedInputStream fin = new BufferedInputStream(new FileInputStream(file)); // 1. 입력 스트림 객체 선언
-            byte[] bytes = new byte[(int) file.length()];  // 2. 파일의 길이만큼 배열 선언
-            fin.read(bytes);      // * 스트림 읽기 [ 대상 : new FileInputStream(file) ] // 3. 파일의 길이만큼 읽어와서 바이트를 배열에 저장
-            BufferedOutputStream fout = new BufferedOutputStream(response.getOutputStream()); // 4. 출력 스트림 객체 선언
-            fout.write(bytes);    // * 스트림 내보내기   [ response.getOutputStream() ]  // 5. 응답하기 [ 배열 내보내기]
-            fout.flush();
-            fout.close();
-            fin.close();  // 6. 버퍼 초기화 혹은 스트림 닫기
+            // 3. 다운로드 스트림 [ ]
+            BufferedInputStream fin = new BufferedInputStream( new FileInputStream(file)  ); // 1. 입력 스트림 객체 선언
+            byte[] bytes = new byte[ (int)file.length() ];  // 2. 파일의 길이만큼 배열 선언
+            fin.read( bytes );      // * 스트림 읽기 [ 대상 : new FileInputStream(file) ] // 3. 파일의 길이만큼 읽어와서 바이트를 배열에 저장
+            BufferedOutputStream fout = new BufferedOutputStream( response.getOutputStream() ); // 4. 출력 스트림 객체 선언
+            fout.write( bytes );    // * 스트림 내보내기   [ response.getOutputStream() ]  // 5. 응답하기 [ 배열 내보내기]
+            fout.flush(); fout.close(); fin.close();  // 6. 버퍼 초기화 혹은 스트림 닫기
 
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-
+        }catch(Exception e){ System.out.println(e);  }
     }
+
+
 
     // * 첨부파일 업로드 [ 1. 쓰기메소드 2. 수정메소드 ] 사용
     @Transactional              //  boardDto : 쓰기,수정 대상     BoardEntity:원본
@@ -147,41 +145,23 @@ public class BoardService {
         } // 2. 0 이면 entity 생성 실패
     }
 
-    // 2. 게시물 목록 조회     // 11-25 페이징처리 되도록 수업함
-    @Transactional              // bcno : 카테고리번호 , page : 현재 페이지번호
-    public List<BoardDto> boardlist(int page , int bcno , String key , String keyword) {
-        Page<BoardEntity> elist = null; // 1. 페이징처리된 엔티티 리스트 객체 선언
-        Pageable pageable = PageRequest.of(
-                page-1 , 3 , Sort.by( Sort.Direction.DESC , "bno" ) );    // 페이지 설정
+    /// 2. 게시물 목록 조회
+    @Transactional      // bcno : 카테고리번호 , page : 현재 페이지번호 , key : 검색필드명 , keyword : 검색 데이터
+    public PageDto boardlist( PageDto pageDto){
 
-        // 3. 검색여부 판단
-        if( key.equals("btitle") ){ // 검색필드가 제목이면
-            // 1. 조건 : 제목검색 2.조건 : 카테고리
-            elist = boardRepository.findbybtitle( bcno , keyword , pageable );
-        }else if( key.equals("bcotent") ){  // 검색필드가 제목이면
-            // 1. 조건 : 제목검색 2.조건 : 카테고리
-            elist = boardRepository.findbybcontent( bcno , keyword , pageable );
-        }else{  // 검색이 없으면
-            if( bcno == 0) elist = boardRepository.findAll( pageable );
-            else elist = boardRepository.findBybcno( bcno , pageable);
-        }
-        // http://localhost:8081/board/boardlist?bcno=3&page=1&key=btitle&keyword=%EA%B4%80%EA%B4%91
+        Pageable pageable = PageRequest.of(  pageDto.getPage()-1 , 3 , Sort.by( Sort.Direction.DESC , "bno") );
 
-        // 프론트엔드에 표시할 페이징번호버튼 수
-        int btncount = 5;                               // 1.페이지에 표시할 총 페이지 버튼 개수
-        int startbtn = (page/btncount) * btncount +1;   // 2. 시작번호 버튼
-        int endbtn = startbtn + btncount-1;             // 3. 마지막번호 버튼
-        if( endbtn > elist.getTotalPages() ) endbtn =elist.getTotalPages();
+        Page<BoardEntity>  elist = boardRepository.findBySearch( pageDto.getBcno() , pageDto.getKey() , pageDto.getKeyword() , pageable ); // 3. 검색여부 / 카테고리  판단 [ 통합 ]
 
         List<BoardDto> dlist = new ArrayList<>(); // 2. 컨트롤에게 전달할때 형변환[ entity->dto ] : 역할이 달라서
-        for (BoardEntity entity : elist) { // 3. 변환
-            dlist.add(entity.toDto());
+        for( BoardEntity entity : elist ){ // 3. 변환
+            dlist.add( entity.toDto() );
         }
 
-        dlist.get(0).setStartbtn(startbtn);
-        dlist.get(0).setEndbtn(endbtn);
+        pageDto.setList( dlist  );  // 결과 리스트 담기
+        pageDto.setTotalBoards( elist.getTotalElements() );
 
-        return dlist;  // 4. 변환된 리스트 dist 반환
+        return pageDto;
     }
 
     // 3. 게시물 개별 조회

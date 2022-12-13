@@ -19,7 +19,12 @@ import Signup from './member/Signup';
 import Login from './member/Login';
 import BoardList from './board/BoardList';
 import BoardWrite from './board/BoardWrite';
+import BoardView from './board/BoardView';
+
+
 import BookList from '../Book/BookList';
+
+
 
 import Library from '../Book/chapter3/Library' // 3장
 import Clock from '../Book/chapter4/Clock' // 4장
@@ -56,9 +61,9 @@ export default function Index( props ){
                         <Route path="/member/login" element={ <Login/> }/>
                         <Route path="/board/list" element={ <BoardList/> }/>
                         <Route path="/board/write" element={ <BoardWrite/> } />
+                        <Route path="/board/view/:bno" element={ <BoardView/> } />
 
                         <Route path="/book/list" element={ <BookList/> } />
-
                         <Route path="/chapter3/Library" element = { <Library /> } />
                         <Route path="/chapter4/Clock" element={ <Clock/> } />
                         <Route path="/chapter5/CommentList" element={ <CommentList/> } />
@@ -67,7 +72,7 @@ export default function Index( props ){
                         <Route path="/chapter8/ConfirmButton2" element={ <ConfirmButton2/> } />
                         <Route path="/chapter9/LandingPage" element={ <LandingPage/> } />
                         <Route path="/chapter10/AttendanceBook" element={ <AttendanceBook/> } />
-                         <Route path="/chapter11/SignUp" element={ <SignUp/> } />
+                        <Route path="/chapter11/SignUp" element={ <SignUp/> } />
                     </Routes>
                     <Footer/>
                 </BrowserRouter>
